@@ -1,0 +1,68 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js Publish Develop Branch
+
+on:
+  workflow_call:
+    inputs:
+      release_channel:
+        description: "An identifier for the published artifact"
+        required: true
+        type: string
+    secrets:
+      api_url:
+        description: Server url the application use
+        required: true
+      expo_token:
+        description: Expo authentication token
+        required: true
+
+jobs:
+  publish_develop:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout
+      - uses: actions/checkout@v2
+
+      # Node Install
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14.x"
+          cache: "yarn"
+
+      # Npm Install Yarn
+      - name: Install specific yarn
+        run: npm install --global yarn@1.22.0
+
+      # Expo Install
+      - uses: expo/expo-github-action@v6
+        with:
+          expo-cache: true
+          expo-version: 4.x
+          token: ${{ secrets.expo_token }}
+
+      # Yarn Install
+      - name: Install dependencies
+        run: yarn install
+
+      # Yarn Lint
+      - name: Lint source files
+        run: yarn run lint
+
+      # Expo Publish
+      - name: Publish to release channel ${{ inputs.release_channel }}
+        run: expo publish --release-channel=${{ inputs.release_channel }}
+        env:
+          REACT_NATIVE_API_DOMAIN: ${{ secrets.api_url }}
+
+      # # Expo Publish
+      # - name: Publish to Expo & create a QR code
+      #   uses: expo/expo-preview-action@v1
+      #   env:
+      #       REACT_NATIVE_API_DOMAIN: ${{ secrets.api_url }}
+      #   with:
+      #       channel: ${{ inputs.release_channel }}
+      #   id: preview
