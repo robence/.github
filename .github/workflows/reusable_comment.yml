@@ -1,0 +1,36 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Comment Expo Publish Url
+
+on:
+  workflow_call:
+    inputs:
+      release_channel:
+        description: "An identifier for the published artifact"
+        required: true
+        type: string
+      github_username:
+        description: "Name of the repository's owner"
+        required: true
+        type: string
+      github_repository:
+        description: "Name of the repository"
+        required: true
+        type: string
+    secrets:
+      github_token:
+        description: Expo authentication token
+        required: true
+
+jobs:
+  comment_on_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Comment deployment link
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.github_token }}
+        with:
+          msg: App is ready for review, you can [see it here](https://expo.io/@${{ inputs.github_username }}/${{ inputs.github_repository }}?release-channel=${{ inputs.release_channel }}).
