@@ -10,12 +10,12 @@ on:
         description: "An identifier for the published artifact"
         required: true
         type: string
-      github_username:
-        description: "Name of the repository's owner"
+      expo_username:
+        description: "Name of the Expo account"
         required: true
         type: string
-      github_repository:
-        description: "Name of the repository"
+      expo_app_name:
+        description: "Name of the Expo application "
         required: true
         type: string
     secrets:
@@ -33,4 +33,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
         with:
-          msg: App is ready for review, you can [see it here](https://expo.io/@${{ inputs.github_username }}/${{ inputs.github_repository }}?release-channel=${{ inputs.release_channel }}).
+          msg: App is ready for review, you can [see it here](https://expo.io/@${{ inputs.expo_username }}/${{ inputs.expo_app_name }}?release-channel=${{ inputs.release_channel }}).
